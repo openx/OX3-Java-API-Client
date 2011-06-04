@@ -81,6 +81,7 @@ public class Demo {
                 domain, path, requestTokenUrl, accessTokenUrl, realm,
                 authorizeUrl);
         try {
+            // connect to the server
             cl.OX3OAuth();
         } catch (UnsupportedEncodingException ex) {
             Logger.getLogger(Demo.class.getName()).log(Level.SEVERE,
