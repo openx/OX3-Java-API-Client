@@ -20,6 +20,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.http.impl.client.BasicCookieStore;
 
 /**
  * OX3 with OAuth demo
