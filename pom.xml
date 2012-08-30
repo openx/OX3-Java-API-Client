@@ -33,8 +33,18 @@
       <artifactId>oauth</artifactId>
       <version>1.0.3</version>
     </dependency>
+    <dependency>
+      <groupId>org.scribe</groupId>
+      <artifactId>scribe</artifactId>
+      <version>1.1.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>4.1.1</version>
+    </dependency>
   </dependencies>
-  
+
   <build>
     <plugins>
       <plugin>
@@ -44,6 +54,29 @@
           <target>1.6</target>
         </configuration>
         <version>2.3.2</version>
+      </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
+          <archive>
+          <manifest>
+            <addClasspath>true</addClasspath>
+          </manifest>
+          </archive>
+        </configuration>
+
+        <executions>
+          <execution>
+          <id>make-assembly</id>
+          <phase>package</phase>
+          <goals>
+            <goal>single</goal>
+          </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
     <resources>
