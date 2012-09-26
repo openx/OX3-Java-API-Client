@@ -29,11 +29,6 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>com.openx</groupId>
-      <artifactId>oauth</artifactId>
-      <version>1.0.3</version>
-    </dependency>
-    <dependency>
       <groupId>org.scribe</groupId>
       <artifactId>scribe</artifactId>
       <version>1.1.2</version>
