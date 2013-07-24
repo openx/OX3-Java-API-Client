@@ -78,7 +78,6 @@ public class OpenXServiceImpl implements OAuthService {
 
         // now to remove the callback param
         request.removeOAuthParameter(OAuthConstants.CALLBACK);
-        request.addOAuthParameter(OpenXServiceImpl.getRealmHeader(), this.api.getRealm());
     }
 
     /**

@@ -41,7 +41,8 @@ public class OpenXApi implements Api {
             String authorizeUrl) {
         this.requestTokenUrl = requestTokenUrl;
         this.accessTokenUrl = accessTokenUrl;
-        this.realm = realm;
+        // OX3 ignores realm now:
+        this.realm = null;
         this.authorizeUrl = authorizeUrl;
     }
 
