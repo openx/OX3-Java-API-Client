@@ -24,8 +24,30 @@ import org.scribe.model.Verifier;
  * OAuth Java Client
  *
  */
-public class Client 
+public class Client
 {
+    /**
+     * Path to use if the instance is API v1
+     */
+    public static final String API_PATH_V1 = "/ox/3.0/a/";
+
+    /**
+     * Path to use if the instance is API v2
+     */
+    public static final String API_PATH_V2 = "/ox/4.0/";
+
+    /**
+     * A list of acceptable API paths
+     *
+     * If the path is not a member of this array, it will be rejected.
+     */
+    public static final String[] OK_API_PATHS = {API_PATH_V1, API_PATH_V2};
+
+    /**
+     * A list of API paths which require data to be sent as JSON
+     */
+    public static final String[] SEND_JSON_PATHS = {API_PATH_V2};
+
     private String apiKey;
     private String apiSecret;
     private String loginUrl;
