@@ -35,12 +35,51 @@ public class Client
     private String path;
     private String requestTokenUrl;
     private String accessTokenUrl;
-    private String realm;
     private String authorizeUrl;
     private Helper helper;
     
     /**
      * Create the OpenX OAuth Client
+     * 
+     * @param apiKey
+     * @param apiSecret
+     * @param loginUrl
+     * @param username
+     * @param password
+     * @param domain
+     * @param path
+     * @param requestTokenUrl
+     * @param accessTokenUrl
+     * @param authorizeUrl 
+     */
+    public Client(
+            String apiKey,
+            String apiSecret,
+            String loginUrl,
+            String username,
+            String password,
+            String domain,
+            String path,
+            String requestTokenUrl,
+            String accessTokenUrl,
+            String authorizeUrl )
+    {
+        this.apiKey = apiKey;
+        this.apiSecret = apiSecret;
+        this.loginUrl = loginUrl;
+        this.username = username;
+        this.password = password;
+        this.domain = domain;
+        this.path = path;
+        this.requestTokenUrl = requestTokenUrl;
+        this.accessTokenUrl = accessTokenUrl;
+        this.authorizeUrl = authorizeUrl;
+    }
+    
+    /**
+     * Create the OpenX OAuth Client
+     * 
+     * DEPRECATED--Realm is now ignored
      * @param apiKey
      * @param apiSecret
      * @param loginUrl
@@ -75,7 +114,6 @@ public class Client
         this.path = path;
         this.requestTokenUrl = requestTokenUrl;
         this.accessTokenUrl = accessTokenUrl;
-        this.realm = realm;
         this.authorizeUrl = authorizeUrl;
     }
     
@@ -88,7 +126,7 @@ public class Client
         // start the OAuth login process
         System.out.println( "Starting OAuth process..." );
 
-        OpenXApi api = new OpenXApi(requestTokenUrl, accessTokenUrl, realm, 
+        OpenXApi api = new OpenXApi(requestTokenUrl, accessTokenUrl,
                 authorizeUrl);
         OpenXServiceImpl service = new OpenXServiceBuilder()
            .provider(api)
