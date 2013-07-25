@@ -46,20 +46,38 @@ public class Helper {
     protected String password;
     protected String token;
     protected BasicCookieStore cookieStore;
+    protected boolean isJsonSender;
 
     /**
      * Object Constructor
+     *
+     * Defaults to sending as params, not JSON
      * @param url
      * @param username
      * @param password
      * @param token 
      */
     public Helper(String url, String username, String password, String token) {
+        this(url, username, password, token, false);
+    }
+
+    /**
+     * Object Constructor
+     *
+     * @param url
+     * @param username
+     * @param password
+     * @param token
+     * @param sendAsJson
+     */
+    public Helper(String url, String username, String password, String token,
+            boolean sendAsJson) {
         this.url = url;
         this.username = username;
         this.password = password;
         this.token = token;
         this.cookieStore = null;
+        this.isJsonSender = sendAsJson;
     }
 
     /**
@@ -138,17 +156,19 @@ public class Helper {
 
         httpclient.setCookieStore(cookieStore);
 
-        HttpPut httpput = new HttpPut(domain + path + "session/validate");
-        HttpResponse response = httpclient.execute(httpput);
+        // This extra validation step is only needed for v1:
+        if (path.equals(Client.API_PATH_V1)) {
+            HttpPut httpput = new HttpPut(domain + path + "session/validate");
+            HttpResponse response = httpclient.execute(httpput);
 
-        httpclient.getConnectionManager().shutdown();
+            httpclient.getConnectionManager().shutdown();
 
-        boolean valid = true;
-        if (response.getStatusLine().getStatusCode() != 200) {
-            valid = false;
+            boolean valid = true;
+            if (response.getStatusLine().getStatusCode() != 200) {
+                return false;
+            }
         }
-
-        return valid;
+        return true;
     }
 
     /**
@@ -225,6 +245,7 @@ public class Helper {
      */
     public String callOX3Api(String domain, String path, String OX3Entity,
             int id, String params) throws IOException {
+        // TODO: This looks like it's not even using params
         String request = domain + path + OX3Entity + "/" + id;
         return makeAPICall(domain, request);
     }
@@ -248,6 +269,9 @@ public class Helper {
 
         httpclient.setCookieStore(cookieStore);
         HttpGet httpget = new HttpGet(request);
+        if (this.isJsonSender) {
+            httpget.setHeader("Content-Type", "application/json");
+        }
         HttpResponse response = httpclient.execute(httpget);
         HttpEntity entity = response.getEntity();
 
