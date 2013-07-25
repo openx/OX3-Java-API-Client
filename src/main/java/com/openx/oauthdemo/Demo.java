@@ -34,7 +34,7 @@ public class Demo {
      */
     public static void main(String[] args) {
         String apiKey, apiSecret, loginUrl, username, password, domain, path,
-                requestTokenUrl, accessTokenUrl, realm, authorizeUrl;
+                requestTokenUrl, accessTokenUrl, authorizeUrl;
         String propertiesFile = "default.properties";
 
         // load params from the properties file
@@ -74,13 +74,11 @@ public class Demo {
         path = defaultProps.getProperty("path");
         requestTokenUrl = defaultProps.getProperty("requestTokenUrl");
         accessTokenUrl = defaultProps.getProperty("accessTokenUrl");
-        realm = defaultProps.getProperty("realm");
         authorizeUrl = defaultProps.getProperty("authorizeUrl");
 
         // log in to the server
         Client cl = new Client(apiKey, apiSecret, loginUrl, username, password,
-                domain, path, requestTokenUrl, accessTokenUrl, realm,
-                authorizeUrl);
+                domain, path, requestTokenUrl, accessTokenUrl, authorizeUrl);
         try {
             // connect to the server
             cl.OX3OAuth();

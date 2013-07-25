@@ -24,6 +24,7 @@ public class OpenXServiceImpl implements OAuthService {
 
     private static final String NO_SCOPE = null;
     private static final String VERSION = "1.0";
+    // Deprecated, since realm is no longer used:
     private static final String REALM_HEADER = "OAuth realm";
     private OAuthConfig config;
     private OpenXApi api;
@@ -156,6 +157,8 @@ public class OpenXServiceImpl implements OAuthService {
 
     /**
      * Gets the OAuth realm header key
+     * 
+     * DEPRECATED--OX3 no longer uses realm
      * @return 
      */
     public static String getRealmHeader() {
