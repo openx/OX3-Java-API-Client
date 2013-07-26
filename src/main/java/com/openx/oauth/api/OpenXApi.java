@@ -25,13 +25,27 @@ import org.scribe.services.*;
  */
 public class OpenXApi implements Api {
 
-    private String realm;
     private String requestTokenUrl;
     private String accessTokenUrl;
     private String authorizeUrl;
 
     /**
      * Class Constructor
+     * @param requestTokenUrl
+     * @param accessTokenUrl
+     * @param authorizeUrl
+     */
+    public OpenXApi(String requestTokenUrl, String accessTokenUrl,
+            String authorizeUrl) {
+        this.requestTokenUrl = requestTokenUrl;
+        this.accessTokenUrl = accessTokenUrl;
+        this.authorizeUrl = authorizeUrl;
+    }
+
+    /**
+     * Class Constructor
+     *
+     * DEPRECATED--Realm is now ignored
      * @param requestTokenUrl
      * @param accessTokenUrl
      * @param realm
@@ -41,7 +55,6 @@ public class OpenXApi implements Api {
             String authorizeUrl) {
         this.requestTokenUrl = requestTokenUrl;
         this.accessTokenUrl = accessTokenUrl;
-        this.realm = realm;
         this.authorizeUrl = authorizeUrl;
     }
 
@@ -181,9 +194,11 @@ public class OpenXApi implements Api {
 
     /**
      * Returns the OAuth realm
+     *
+     * DEPRECATED--Realm is no longer used, so this method always returns null.
      * @return String realm
      */
     public String getRealm() {
-        return realm;
+        return null;
     }
 }
