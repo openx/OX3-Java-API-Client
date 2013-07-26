@@ -138,17 +138,19 @@ public class Helper {
 
         httpclient.setCookieStore(cookieStore);
 
-        HttpPut httpput = new HttpPut(domain + path + "session/validate");
-        HttpResponse response = httpclient.execute(httpput);
+        // This extra validation step is only needed for v1:
+        if (path.equals(Client.API_PATH_V1)) {
+            HttpPut httpput = new HttpPut(domain + path + "session/validate");
+            HttpResponse response = httpclient.execute(httpput);
 
-        httpclient.getConnectionManager().shutdown();
+            httpclient.getConnectionManager().shutdown();
 
-        boolean valid = true;
-        if (response.getStatusLine().getStatusCode() != 200) {
-            valid = false;
+            boolean valid = true;
+            if (response.getStatusLine().getStatusCode() != 200) {
+                return false;
+            }
         }
-
-        return valid;
+        return true;
     }
 
     /**
@@ -225,6 +227,7 @@ public class Helper {
      */
     public String callOX3Api(String domain, String path, String OX3Entity,
             int id, String params) throws IOException {
+        // TODO: This looks like it's not even using params
         String request = domain + path + OX3Entity + "/" + id;
         return makeAPICall(domain, request);
     }
