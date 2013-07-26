@@ -46,38 +46,20 @@ public class Helper {
     protected String password;
     protected String token;
     protected BasicCookieStore cookieStore;
-    protected boolean isJsonSender;
 
     /**
      * Object Constructor
-     *
-     * Defaults to sending as params, not JSON
      * @param url
      * @param username
      * @param password
      * @param token 
      */
     public Helper(String url, String username, String password, String token) {
-        this(url, username, password, token, false);
-    }
-
-    /**
-     * Object Constructor
-     *
-     * @param url
-     * @param username
-     * @param password
-     * @param token
-     * @param sendAsJson
-     */
-    public Helper(String url, String username, String password, String token,
-            boolean sendAsJson) {
         this.url = url;
         this.username = username;
         this.password = password;
         this.token = token;
         this.cookieStore = null;
-        this.isJsonSender = sendAsJson;
     }
 
     /**
@@ -269,9 +251,6 @@ public class Helper {
 
         httpclient.setCookieStore(cookieStore);
         HttpGet httpget = new HttpGet(request);
-        if (this.isJsonSender) {
-            httpget.setHeader("Content-Type", "application/json");
-        }
         HttpResponse response = httpclient.execute(httpget);
         HttpEntity entity = response.getEntity();
 

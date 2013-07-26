@@ -43,11 +43,6 @@ public class Client
      */
     public static final String[] OK_API_PATHS = {API_PATH_V1, API_PATH_V2};
 
-    /**
-     * A list of API paths which require data to be sent as JSON
-     */
-    public static final String[] SEND_JSON_PATHS = {API_PATH_V2};
-
     private String apiKey;
     private String apiSecret;
     private String loginUrl;
