@@ -12,6 +12,8 @@
 package com.openx.oauthdemo;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonParser;
 import com.openx.oauth.client.Client;
 import com.openx.ox3.entities.OX3Account;
 import java.io.IOException;
@@ -102,15 +104,25 @@ public class DemoV2 {
             return;
         }
 
+        // Read out the raw HTTP response body:
         System.out.println("JSON response: " + json);
 
         Gson gson = new Gson();
-        int[] accounts = gson.fromJson(json, int[].class);
+        // List of actual accounts in this response:
+        JsonParser parser = new JsonParser();
+        JsonArray accounts = parser.parse(json).getAsJsonObject().
+                getAsJsonArray("objects");
 
-        if (accounts.length > 0) {
+        if (accounts.size() > 0) {
             // let's get a single account
             try {
-                json = cl.getHelper().callOX3Api(domain, path, "account", accounts[0]);
+                // Get the ID of the first account in the list:
+                int accountId = accounts.get(0).getAsJsonObject().get("id").
+                        getAsInt();
+                // Repeat the API query, asking only for the
+                // account with this ID:
+                json = cl.getHelper().callOX3Api(domain, path, "account",
+                        accountId);
             } catch (IOException ex) {
                 System.out.println("There was an error calling the API");
                 return;
@@ -118,7 +130,11 @@ public class DemoV2 {
 
             System.out.println("JSON response: " + json);
 
-            OX3Account account = gson.fromJson(json, OX3Account.class);
+            // In v2, all responses for single objects come in
+            // the form of unary arrays:
+            OX3Account account = gson.fromJson(
+                    parser.parse(json).getAsJsonArray().get(0),
+                    OX3Account.class);
 
             System.out.println("Account id: " + account.getId() + " name: "
                     + account.getName());
