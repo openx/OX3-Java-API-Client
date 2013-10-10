@@ -23,14 +23,18 @@ import java.util.Map;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.cookie.BasicClientCookie;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 
 /**
@@ -276,5 +280,42 @@ public class Helper {
         return cookieStore;
     }
     
+	/**
+	 * Make post api call using a json string
+	 * 
+	 * @param domain
+	 * @param path
+	 * @param jsonString
+	 * @return
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 */
+	public String postAPICall(String domain, String path, String jsonString)
+			throws IOException {
+		DefaultHttpClient httpclient = new DefaultHttpClient();
+		OpenXRedirectStrategy dsr = new OpenXRedirectStrategy();
+		httpclient.setRedirectStrategy(dsr);
+
+		if (cookieStore == null) {
+			createCookieStore(domain, token);
+		}
+
+		httpclient.setCookieStore(cookieStore);
+		HttpPost httppost = new HttpPost(domain + path);
+		StringEntity requestEntity = new StringEntity(jsonString);
+		requestEntity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE,
+				"application/json"));
+		httppost.setEntity(requestEntity);
+		HttpResponse response = httpclient.execute(httppost);
+
+		String result = null;
+		if (response.getStatusLine().getStatusCode() == 200) {
+			result = EntityUtils.toString(response.getEntity());
+		} else {
+			throw new IOException("RETURNCODE:"
+					+ response.getStatusLine().getStatusCode());
+		}
+		return result;
+	}
     
 }
