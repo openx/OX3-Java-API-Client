@@ -65,16 +65,16 @@ public class Demo {
             return;
         }
 
-        apiKey = defaultProps.getProperty("apiKey");
-        apiSecret = defaultProps.getProperty("apiSecret");
-        loginUrl = defaultProps.getProperty("loginUrl");
-        username = defaultProps.getProperty("username");
-        password = defaultProps.getProperty("password");
-        domain = defaultProps.getProperty("domain");
-        path = defaultProps.getProperty("path");
-        requestTokenUrl = defaultProps.getProperty("requestTokenUrl");
-        accessTokenUrl = defaultProps.getProperty("accessTokenUrl");
-        authorizeUrl = defaultProps.getProperty("authorizeUrl");
+        apiKey = defaultProps.getProperty("apiKey").trim();
+        apiSecret = defaultProps.getProperty("apiSecret").trim();
+        loginUrl = defaultProps.getProperty("loginUrl").trim();
+        username = defaultProps.getProperty("username").trim();
+        password = defaultProps.getProperty("password").trim();
+        domain = defaultProps.getProperty("domain").trim();
+        path = defaultProps.getProperty("path").trim();
+        requestTokenUrl = defaultProps.getProperty("requestTokenUrl").trim();
+        accessTokenUrl = defaultProps.getProperty("accessTokenUrl").trim();
+        authorizeUrl = defaultProps.getProperty("authorizeUrl").trim();
 
         // log in to the server
         Client cl = new Client(apiKey, apiSecret, loginUrl, username, password,
