@@ -11,16 +11,16 @@
  *======================================================================*/
 package com.openx.oauthdemo;
 
-import com.google.gson.Gson;
-import com.openx.oauth.client.Client;
-import com.openx.ox3.entities.OX3Account;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.http.impl.client.BasicCookieStore;
+
+import com.google.gson.Gson;
+import com.openx.oauth.client.Client;
+import com.openx.ox3.entities.OX3Account;
 
 /**
  * OX3 with OAuth demo
@@ -28,6 +28,8 @@ import org.apache.http.impl.client.BasicCookieStore;
  */
 public class Demo {
 
+    private static final Logger logger = Logger.getLogger(Demo.class.getName());
+    
     /** 
      * Main class. OX3 with OAuth demo
      * @param args 
@@ -47,21 +49,21 @@ public class Demo {
                 defaultProps.load(in);
             }
         } catch (IOException ex) {
-            System.out.println("The properties file was not found!");
+            logger.warning("The properties file was not found!");
             return;
         } finally {
             if (in != null) {
                 try {
                     in.close();
                 } catch (IOException ex) {
-                    System.out.println("IO Error closing the properties file");
+                    logger.warning("IO Error closing the properties file");
                     return;
                 }
             }
         }
 
         if (defaultProps.isEmpty()) {
-            System.out.println("The properties file was not loaded!");
+            logger.warning("The properties file was not loaded!");
             return;
         }
 
@@ -98,11 +100,11 @@ public class Demo {
         try {
             json = cl.getHelper().callOX3Api(domain, path, "account");
         } catch (IOException ex) {
-            System.out.println("There was an error calling the API");
+            logger.warning("There was an error calling the API");
             return;
         }
 
-        System.out.println("JSON response: " + json);
+        logger.info("JSON response: " + json);
 
         Gson gson = new Gson();
         int[] accounts = gson.fromJson(json, int[].class);
@@ -112,15 +114,15 @@ public class Demo {
             try {
                 json = cl.getHelper().callOX3Api(domain, path, "account", accounts[0]);
             } catch (IOException ex) {
-                System.out.println("There was an error calling the API");
+                logger.warning("There was an error calling the API");
                 return;
             }
 
-            System.out.println("JSON response: " + json);
+            logger.info("JSON response: " + json);
 
             OX3Account account = gson.fromJson(json, OX3Account.class);
 
-            System.out.println("Account id: " + account.getId() + " name: "
+            logger.info("Account id: " + account.getId() + " name: "
                     + account.getName());
         }
     }
