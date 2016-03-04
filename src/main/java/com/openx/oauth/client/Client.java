@@ -13,12 +13,15 @@ package com.openx.oauth.client;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Map;
+import java.util.logging.Logger;
+
+import org.scribe.model.Token;
+import org.scribe.model.Verifier;
+
 import com.openx.oauth.api.OpenXApi;
 import com.openx.oauth.builder.OpenXServiceBuilder;
 import com.openx.oauth.service.OpenXServiceImpl;
-import java.util.Map;
-import org.scribe.model.Token;
-import org.scribe.model.Verifier;
 
 /**
  * OAuth Java Client
@@ -42,6 +45,8 @@ public class Client
      * If the path is not a member of this array, it will be rejected.
      */
     public static final String[] OK_API_PATHS = {API_PATH_V1, API_PATH_V2};
+    
+    private static final Logger logger = Logger.getLogger(Client.class.getName());
 
     private String apiKey;
     private String apiSecret;
@@ -141,7 +146,7 @@ public class Client
             IOException, Exception
     {
         // start the OAuth login process
-        System.out.println( "Starting OAuth process..." );
+        logger.fine( "Starting OAuth process..." );
 
         OpenXApi api = new OpenXApi(requestTokenUrl, accessTokenUrl,
                 authorizeUrl);
@@ -153,14 +158,14 @@ public class Client
 
         // get the request token
         Token requestToken = service.getRequestToken();
-        System.out.println( "Request Token Output: " + requestToken.toString() );
+        logger.fine( "Request Token Output: " + requestToken.toString() );
 
         // now to log in
         String result;
         helper = new Helper(loginUrl, username, password, requestToken.getToken());
         result = helper.doLogin();
         
-        System.out.println("SSO Login response: " + result);
+        logger.fine("SSO Login response: " + result);
         if(result.isEmpty()) {
             throw new Exception( "There was an error logging into the OAuth Server" );
         }
@@ -171,18 +176,18 @@ public class Client
             params = helper.splitQueryString(
                     result.replace("oob?", ""));
         } catch (UnsupportedEncodingException ex) {
-            System.out.println( "You should probably have UTF-8 encoding..." );
+            logger.warning( "You should probably have UTF-8 encoding..." );
             return;
         }
         
-        System.out.println( "Here is the returned token from logging in: " +
+        logger.fine( "Here is the returned token from logging in: " +
                 params.get("oauth_token") );
         
         // get the access token
         Verifier verifier = new Verifier(params.get("oauth_verifier"));
         Token accessToken = service.getAccessToken(requestToken, verifier);
         
-        System.out.println( "Access Token Output: " + accessToken.toString() );
+        logger.fine( "Access Token Output: " + accessToken.toString() );
         
         // now submit the access token to the API to validate
         boolean valid = helper.validateToken(domain, 
