@@ -47,6 +47,7 @@ import com.openx.oauth.redirect.OpenXRedirectStrategy;
  */
 public class Helper {
 
+    protected HttpHost proxy;
     protected HttpURLConnection connection;
     protected String url;
     protected String username;
@@ -62,6 +63,24 @@ public class Helper {
      * @param token
      */
     public Helper(String url, String username, String password, String token) {
+        this.proxy = null;
+        this.url = url;
+        this.username = username;
+        this.password = password;
+        this.token = token;
+        this.cookieStore = null;
+    }
+
+    /**
+     * Object Constructor
+     * @param proxy the proxy to use for the request
+     * @param url
+     * @param username
+     * @param password
+     * @param token
+     */
+    public Helper(HttpHost proxy, String url, String username, String password, String token) {
+        this.proxy = proxy;
         this.url = url;
         this.username = username;
         this.password = password;
@@ -76,22 +95,7 @@ public class Helper {
      * @throws IOException
      */
     public String doLogin() throws UnsupportedEncodingException, IOException {
-        return doLogin(null);
-    }
-
-    /**
-     * @param proxy the proxy to use for the request
-     * @return String login string
-     * @throws UnsupportedEncodingException
-     * @throws IOException
-     */
-    public String doLogin(HttpHost proxy) throws UnsupportedEncodingException, IOException {
-        DefaultHttpClient httpclient = new DefaultHttpClient();
-        if (proxy != null) {
-            httpclient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
-        }
-        OpenXRedirectStrategy dsr = new OpenXRedirectStrategy();
-        httpclient.setRedirectStrategy(dsr);
+        DefaultHttpClient httpclient = openxHttpClientFactory();
 
         List<NameValuePair> formparams = new ArrayList<NameValuePair>();
         formparams.add(new BasicNameValuePair("email", username));
@@ -148,9 +152,7 @@ public class Helper {
      */
     public boolean validateToken(String domain, String token, String path)
             throws IOException {
-        DefaultHttpClient httpclient = new DefaultHttpClient();
-        OpenXRedirectStrategy dsr = new OpenXRedirectStrategy();
-        httpclient.setRedirectStrategy(dsr);
+        DefaultHttpClient httpclient = openxHttpClientFactory();
 
         if (cookieStore == null) {
             createCookieStore(domain, token);
@@ -260,9 +262,7 @@ public class Helper {
      */
     protected String makeAPICall(String domain, String request)
             throws IOException {
-        DefaultHttpClient httpclient = new DefaultHttpClient();
-        OpenXRedirectStrategy dsr = new OpenXRedirectStrategy();
-        httpclient.setRedirectStrategy(dsr);
+        DefaultHttpClient httpclient = openxHttpClientFactory();
 
         if (cookieStore == null) {
             createCookieStore(domain, token);
@@ -307,9 +307,7 @@ public class Helper {
 	 */
 	public String postAPICall(String domain, String path, String jsonString)
 			throws IOException {
-		DefaultHttpClient httpclient = new DefaultHttpClient();
-		OpenXRedirectStrategy dsr = new OpenXRedirectStrategy();
-		httpclient.setRedirectStrategy(dsr);
+		DefaultHttpClient httpclient = openxHttpClientFactory();
 
 		if (cookieStore == null) {
 			createCookieStore(domain, token);
@@ -332,5 +330,15 @@ public class Helper {
 		}
 		return result;
 	}
+
+	private DefaultHttpClient openxHttpClientFactory() {
+		DefaultHttpClient httpclient = new DefaultHttpClient();
+        if (proxy != null) {
+            httpclient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+        }
+        OpenXRedirectStrategy dsr = new OpenXRedirectStrategy();
+        httpclient.setRedirectStrategy(dsr);
+        return httpclient;
+    }
 
 }
