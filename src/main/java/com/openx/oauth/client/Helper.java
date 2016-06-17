@@ -80,12 +80,8 @@ public class Helper {
      * @param token
      */
     public Helper(HttpHost proxy, String url, String username, String password, String token) {
+        this(url, username, password, token);
         this.proxy = proxy;
-        this.url = url;
-        this.username = username;
-        this.password = password;
-        this.token = token;
-        this.cookieStore = null;
     }
 
     /**
