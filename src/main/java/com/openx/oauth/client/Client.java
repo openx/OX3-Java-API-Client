@@ -98,6 +98,7 @@ public class Client
         this.requestTokenUrl = requestTokenUrl;
         this.accessTokenUrl = accessTokenUrl;
         this.authorizeUrl = authorizeUrl;
+        this.proxy = null;
     }
 
     /**
@@ -139,8 +140,8 @@ public class Client
             accessTokenUrl,
             authorizeUrl);
         this.proxy = proxy;
-
     }
+
     /**
      * Create the OpenX OAuth Client
      *
@@ -206,8 +207,8 @@ public class Client
 
         // now to log in
         String result;
-        helper = new Helper(loginUrl, username, password, requestToken.getToken());
-        result = helper.doLogin(proxy);
+        helper = new Helper(this.proxy, loginUrl, username, password, requestToken.getToken());
+        result = helper.doLogin();
 
         logger.fine("SSO Login response: " + result);
         if(result.isEmpty()) {
