@@ -16,6 +16,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.apache.http.HttpHost;
 import org.scribe.model.Token;
 import org.scribe.model.Verifier;
 
@@ -45,7 +46,7 @@ public class Client
      * If the path is not a member of this array, it will be rejected.
      */
     public static final String[] OK_API_PATHS = {API_PATH_V1, API_PATH_V2};
-    
+
     private static final Logger logger = Logger.getLogger(Client.class.getName());
 
     private String apiKey;
@@ -59,10 +60,11 @@ public class Client
     private String accessTokenUrl;
     private String authorizeUrl;
     private Helper helper;
-    
+    private HttpHost proxy;
+
     /**
      * Create the OpenX OAuth Client
-     * 
+     *
      * @param apiKey
      * @param apiSecret
      * @param loginUrl
@@ -72,7 +74,7 @@ public class Client
      * @param path
      * @param requestTokenUrl
      * @param accessTokenUrl
-     * @param authorizeUrl 
+     * @param authorizeUrl
      */
     public Client(
             String apiKey,
@@ -97,10 +99,51 @@ public class Client
         this.accessTokenUrl = accessTokenUrl;
         this.authorizeUrl = authorizeUrl;
     }
-    
+
+    /**
+     * Create the OpenX OAuth Client with proxy
+     *
+     * @param apiKey
+     * @param apiSecret
+     * @param loginUrl
+     * @param username
+     * @param password
+     * @param domain
+     * @param path
+     * @param requestTokenUrl
+     * @param accessTokenUrl
+     * @param authorizeUrl
+     * @param proxy
+     */
+    public Client(
+            String apiKey,
+            String apiSecret,
+            String loginUrl,
+            String username,
+            String password,
+            String domain,
+            String path,
+            String requestTokenUrl,
+            String accessTokenUrl,
+            String authorizeUrl,
+            HttpHost proxy)
+    {
+        this(apiKey,
+            apiSecret,
+            loginUrl,
+            username,
+            password,
+            domain,
+            path,
+            requestTokenUrl,
+            accessTokenUrl,
+            authorizeUrl);
+        this.proxy = proxy;
+
+    }
     /**
      * Create the OpenX OAuth Client
-     * 
+     *
      * DEPRECATED--Realm is now ignored
      * @param apiKey
      * @param apiSecret
@@ -112,8 +155,9 @@ public class Client
      * @param requestTokenUrl
      * @param accessTokenUrl
      * @param realm
-     * @param authorizeUrl 
+     * @param authorizeUrl
      */
+    @Deprecated
     public Client(
             String apiKey,
             String apiSecret,
@@ -126,7 +170,7 @@ public class Client
             String accessTokenUrl,
             String realm,
             String authorizeUrl )
-    {        
+    {
         this.apiKey = apiKey;
         this.apiSecret = apiSecret;
         this.loginUrl = loginUrl;
@@ -138,11 +182,11 @@ public class Client
         this.accessTokenUrl = accessTokenUrl;
         this.authorizeUrl = authorizeUrl;
     }
-    
+
     /**
      * Perform the login procedure
      */
-    public void OX3OAuth() throws UnsupportedEncodingException, 
+    public void OX3OAuth() throws UnsupportedEncodingException,
             IOException, Exception
     {
         // start the OAuth login process
@@ -163,13 +207,13 @@ public class Client
         // now to log in
         String result;
         helper = new Helper(loginUrl, username, password, requestToken.getToken());
-        result = helper.doLogin();
-        
+        result = helper.doLogin(proxy);
+
         logger.fine("SSO Login response: " + result);
         if(result.isEmpty()) {
             throw new Exception( "There was an error logging into the OAuth Server" );
         }
-        
+
         // process the result from the OAuth server
         Map<String, String> params;
         try {
@@ -179,18 +223,18 @@ public class Client
             logger.warning( "You should probably have UTF-8 encoding..." );
             return;
         }
-        
+
         logger.fine( "Here is the returned token from logging in: " +
                 params.get("oauth_token") );
-        
+
         // get the access token
         Verifier verifier = new Verifier(params.get("oauth_verifier"));
         Token accessToken = service.getAccessToken(requestToken, verifier);
-        
+
         logger.fine( "Access Token Output: " + accessToken.toString() );
-        
+
         // now submit the access token to the API to validate
-        boolean valid = helper.validateToken(domain, 
+        boolean valid = helper.validateToken(domain,
                     accessToken.getToken(), path);
 
         if(!valid) {
