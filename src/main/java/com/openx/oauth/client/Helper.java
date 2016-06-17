@@ -295,44 +295,44 @@ public class Helper {
         return cookieStore;
     }
 
-	/**
-	 * Make post api call using a json string
-	 *
-	 * @param domain
-	 * @param path
-	 * @param jsonString
-	 * @return
-	 * @throws ClientProtocolException
-	 * @throws IOException
-	 */
-	public String postAPICall(String domain, String path, String jsonString)
-			throws IOException {
-		DefaultHttpClient httpclient = openxHttpClientFactory();
+    /**
+     * Make post api call using a json string
+     *
+     * @param domain
+     * @param path
+     * @param jsonString
+     * @return
+     * @throws ClientProtocolException
+     * @throws IOException
+     */
+    public String postAPICall(String domain, String path, String jsonString)
+            throws IOException {
+        DefaultHttpClient httpclient = openxHttpClientFactory();
 
-		if (cookieStore == null) {
-			createCookieStore(domain, token);
-		}
+        if (cookieStore == null) {
+            createCookieStore(domain, token);
+        }
 
-		httpclient.setCookieStore(cookieStore);
-		HttpPost httppost = new HttpPost(domain + path);
-		StringEntity requestEntity = new StringEntity(jsonString);
-		requestEntity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE,
-				"application/json"));
-		httppost.setEntity(requestEntity);
-		HttpResponse response = httpclient.execute(httppost);
+        httpclient.setCookieStore(cookieStore);
+        HttpPost httppost = new HttpPost(domain + path);
+        StringEntity requestEntity = new StringEntity(jsonString);
+        requestEntity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE,
+                "application/json"));
+        httppost.setEntity(requestEntity);
+        HttpResponse response = httpclient.execute(httppost);
 
-		String result = null;
-		if (response.getStatusLine().getStatusCode() == 200) {
-			result = EntityUtils.toString(response.getEntity());
-		} else {
-			throw new IOException("RETURNCODE:"
-					+ response.getStatusLine().getStatusCode());
-		}
-		return result;
-	}
+        String result = null;
+        if (response.getStatusLine().getStatusCode() == 200) {
+            result = EntityUtils.toString(response.getEntity());
+        } else {
+            throw new IOException("RETURNCODE:"
+                    + response.getStatusLine().getStatusCode());
+        }
+        return result;
+    }
 
-	private DefaultHttpClient openxHttpClientFactory() {
-		DefaultHttpClient httpclient = new DefaultHttpClient();
+    private DefaultHttpClient openxHttpClientFactory() {
+        DefaultHttpClient httpclient = new DefaultHttpClient();
         if (proxy != null) {
             httpclient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
         }
