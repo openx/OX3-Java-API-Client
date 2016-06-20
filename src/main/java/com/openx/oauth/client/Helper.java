@@ -13,7 +13,6 @@ package com.openx.oauth.client;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,7 +47,6 @@ import com.openx.oauth.redirect.OpenXRedirectStrategy;
 public class Helper {
 
     protected HttpHost proxy;
-    protected HttpURLConnection connection;
     protected String url;
     protected String username;
     protected String password;
