@@ -78,12 +78,6 @@ public class DemoV2Proxy {
         String proxyScheme = defaultProps.getProperty("proxyScheme").trim();
         HttpHost proxy = new HttpHost(proxyHost, Integer.parseInt(proxyPort), proxyScheme);
 
-        // Override system proxy settings for both http & https connections. Necessary for OAuth.
-        System.setProperty("http.proxyHost", proxyHost);
-        System.setProperty("http.proxyPort", proxyPort);
-        System.setProperty("https.proxyHost", proxyHost);
-        System.setProperty("https.proxyPort", proxyPort);
-
         // log in to the server
         Client cl = new Client(apiKey, apiSecret, loginUrl, username, password, domain, path, requestTokenUrl,
                 accessTokenUrl, authorizeUrl, proxy);

@@ -193,6 +193,16 @@ public class Client
         // start the OAuth login process
         logger.fine( "Starting OAuth process..." );
 
+        // Override system proxy settings for both http & https connections. Necessary for OAuth.
+        String proxyHost = proxy.getHostName();
+        String proxyPort = String.valueOf(proxy.getPort());
+        logger.fine("Using proxyHost = " + proxyHost);
+        logger.fine("Using proxyPort = " + proxyPort);
+        System.setProperty("http.proxyHost", proxyHost);
+        System.setProperty("http.proxyPort", proxyPort);
+        System.setProperty("https.proxyHost", proxyHost);
+        System.setProperty("https.proxyPort", proxyPort);
+
         OpenXApi api = new OpenXApi(requestTokenUrl, accessTokenUrl,
                 authorizeUrl);
         OpenXServiceImpl service = new OpenXServiceBuilder()
@@ -207,7 +217,7 @@ public class Client
 
         // now to log in
         String result;
-        helper = new Helper(this.proxy, loginUrl, username, password, requestToken.getToken());
+        helper = new Helper(proxy, loginUrl, username, password, requestToken.getToken());
         result = helper.doLogin();
 
         logger.fine("SSO Login response: " + result);
