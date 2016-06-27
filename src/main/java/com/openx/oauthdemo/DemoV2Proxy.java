@@ -92,10 +92,13 @@ public class DemoV2Proxy {
             cl.OX3OAuth();
         } catch (UnsupportedEncodingException ex) {
             Logger.getLogger(Demo.class.getName()).log(Level.SEVERE, "UTF-8 support needed for OAuth", ex);
+            System.exit(1);
         } catch (IOException ex) {
             Logger.getLogger(Demo.class.getName()).log(Level.SEVERE, "IO file reading error", ex);
+            System.exit(1);
         } catch (Exception ex) {
             Logger.getLogger(Demo.class.getName()).log(Level.SEVERE, "API issue", ex);
+            System.exit(1);
         }
 
         // now lets make a call to the api to check
