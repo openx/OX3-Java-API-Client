@@ -78,12 +78,6 @@ public class DemoV2Proxy {
         String proxyScheme = defaultProps.getProperty("proxyScheme").trim();
         HttpHost proxy = new HttpHost(proxyHost, Integer.parseInt(proxyPort), proxyScheme);
 
-        // Override system proxy settings for both http & https connections. Necessary for OAuth.
-        System.setProperty("http.proxyHost", proxyHost);
-        System.setProperty("http.proxyPort", proxyPort);
-        System.setProperty("https.proxyHost", proxyHost);
-        System.setProperty("https.proxyPort", proxyPort);
-
         // log in to the server
         Client cl = new Client(apiKey, apiSecret, loginUrl, username, password, domain, path, requestTokenUrl,
                 accessTokenUrl, authorizeUrl, proxy);
@@ -92,10 +86,13 @@ public class DemoV2Proxy {
             cl.OX3OAuth();
         } catch (UnsupportedEncodingException ex) {
             Logger.getLogger(Demo.class.getName()).log(Level.SEVERE, "UTF-8 support needed for OAuth", ex);
+            System.exit(1);
         } catch (IOException ex) {
             Logger.getLogger(Demo.class.getName()).log(Level.SEVERE, "IO file reading error", ex);
+            System.exit(1);
         } catch (Exception ex) {
             Logger.getLogger(Demo.class.getName()).log(Level.SEVERE, "API issue", ex);
+            System.exit(1);
         }
 
         // now lets make a call to the api to check

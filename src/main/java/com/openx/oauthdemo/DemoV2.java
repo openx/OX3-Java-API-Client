@@ -89,21 +89,24 @@ public class DemoV2 {
         } catch (UnsupportedEncodingException ex) {
             Logger.getLogger(Demo.class.getName()).log(Level.SEVERE,
                     "UTF-8 support needed for OAuth", ex);
+            System.exit(1);
         } catch (IOException ex) {
             Logger.getLogger(Demo.class.getName()).log(Level.SEVERE,
                     "IO file reading error", ex);
+            System.exit(1);
         } catch (Exception ex) {
             Logger.getLogger(Demo.class.getName()).log(Level.SEVERE,
                     "API issue", ex);
+            System.exit(1);
         }
 
         // now lets make a call to the api to check 
-        String json;
+        String json = "";
         try {
             json = cl.getHelper().callOX3Api(domain, path, "account");
         } catch (IOException ex) {
             logger.warning("There was an error calling the API");
-            return;
+            System.exit(1);
         }
 
         // Read out the raw HTTP response body:
