@@ -194,14 +194,16 @@ public class Client
         logger.fine( "Starting OAuth process..." );
 
         // Override system proxy settings for both http & https connections. Necessary for OAuth.
-        String proxyHost = proxy.getHostName();
-        String proxyPort = String.valueOf(proxy.getPort());
-        logger.fine("Using proxyHost = " + proxyHost);
-        logger.fine("Using proxyPort = " + proxyPort);
-        System.setProperty("http.proxyHost", proxyHost);
-        System.setProperty("http.proxyPort", proxyPort);
-        System.setProperty("https.proxyHost", proxyHost);
-        System.setProperty("https.proxyPort", proxyPort);
+        if (proxy != null) {
+            String proxyHost = proxy.getHostName();
+            String proxyPort = String.valueOf(proxy.getPort());
+            logger.fine("Using proxyHost = " + proxyHost);
+            logger.fine("Using proxyPort = " + proxyPort);
+            System.setProperty("http.proxyHost", proxyHost);
+            System.setProperty("http.proxyPort", proxyPort);
+            System.setProperty("https.proxyHost", proxyHost);
+            System.setProperty("https.proxyPort", proxyPort);
+        }
 
         OpenXApi api = new OpenXApi(requestTokenUrl, accessTokenUrl,
                 authorizeUrl);
