@@ -77,10 +77,14 @@ public class DemoV2Proxy {
         String proxyPort = defaultProps.getProperty("proxyPort").trim();
         String proxyScheme = defaultProps.getProperty("proxyScheme").trim();
         HttpHost proxy = new HttpHost(proxyHost, Integer.parseInt(proxyPort), proxyScheme);
+        String ignoreSslCertificate = defaultProps.getProperty("ignoreSslCertificate");
+        if (ignoreSslCertificate != null) {
+            ignoreSslCertificate = ignoreSslCertificate.trim();
+        }
 
         // log in to the server
         Client cl = new Client(apiKey, apiSecret, loginUrl, username, password, domain, path, requestTokenUrl,
-                accessTokenUrl, authorizeUrl, proxy);
+                accessTokenUrl, authorizeUrl, proxy, Boolean.parseBoolean(ignoreSslCertificate));
         try {
             // connect to the server
             cl.OX3OAuth();

@@ -14,6 +14,8 @@ package com.openx.oauth.client;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +31,9 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.conn.params.ConnRoutePNames;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -52,6 +57,7 @@ public class Helper {
     protected String password;
     protected String token;
     protected BasicCookieStore cookieStore;
+    private final boolean ignoreSslCertificate;
 
     /**
      * Object Constructor
@@ -61,12 +67,7 @@ public class Helper {
      * @param token
      */
     public Helper(String url, String username, String password, String token) {
-        this.proxy = null;
-        this.url = url;
-        this.username = username;
-        this.password = password;
-        this.token = token;
-        this.cookieStore = null;
+        this(null, url, username, password, token, false);
     }
 
     /**
@@ -77,9 +78,14 @@ public class Helper {
      * @param password
      * @param token
      */
-    public Helper(HttpHost proxy, String url, String username, String password, String token) {
-        this(url, username, password, token);
+    public Helper(HttpHost proxy, String url, String username, String password, String token, boolean ignoreSslCertificate) {
         this.proxy = proxy;
+        this.url = url;
+        this.username = username;
+        this.password = password;
+        this.token = token;
+        this.ignoreSslCertificate = ignoreSslCertificate;
+        this.cookieStore = null;
     }
 
     /**
@@ -231,7 +237,7 @@ public class Helper {
     }
 
     /**
-     * Calls the OX3 API with an object by an id with extra params
+     * This doesn't work as expected since params is not used
      * @param domain
      * @param path
      * @param OX3Entity
@@ -240,9 +246,10 @@ public class Helper {
      * @return results from the API
      * @throws IOException
      */
+    @Deprecated
     public String callOX3Api(String domain, String path, String OX3Entity,
             int id, String params) throws IOException {
-        // TODO: This looks like it's not even using params
+        // This looks like it's not even using params
         String request = domain + path + OX3Entity + "/" + id;
         return makeAPICall(domain, request);
     }
@@ -330,9 +337,29 @@ public class Helper {
         if (proxy != null) {
             httpclient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
         }
+        if (ignoreSslCertificate) {
+            ignoreSslCertificate(httpclient);
+        }
         OpenXRedirectStrategy dsr = new OpenXRedirectStrategy();
         httpclient.setRedirectStrategy(dsr);
         return httpclient;
     }
 
+    /**
+     * apache httpclient use https proxy: peer not authenticated
+     */
+    private void ignoreSslCertificate(DefaultHttpClient httpclient) {
+        try {
+            SSLSocketFactory sslsf = new SSLSocketFactory(new TrustStrategy() {
+
+                @Override
+                public boolean isTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                    return true;
+                }
+            });
+            httpclient.getConnectionManager().getSchemeRegistry().register(new Scheme("https", 443, sslsf));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
