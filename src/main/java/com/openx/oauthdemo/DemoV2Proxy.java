@@ -85,23 +85,27 @@ public class DemoV2Proxy {
             // connect to the server
             cl.OX3OAuth();
         } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(Demo.class.getName()).log(Level.SEVERE, "UTF-8 support needed for OAuth", ex);
+            Logger.getLogger(DemoV2Proxy.class.getName()).log(Level.SEVERE, "UTF-8 support needed for OAuth", ex);
+            ex.printStackTrace(System.err);
             System.exit(1);
         } catch (IOException ex) {
-            Logger.getLogger(Demo.class.getName()).log(Level.SEVERE, "IO file reading error", ex);
+            Logger.getLogger(DemoV2Proxy.class.getName()).log(Level.SEVERE, "IO file reading error", ex);
+            ex.printStackTrace(System.err);
             System.exit(1);
         } catch (Exception ex) {
-            Logger.getLogger(Demo.class.getName()).log(Level.SEVERE, "API issue", ex);
+            Logger.getLogger(DemoV2Proxy.class.getName()).log(Level.SEVERE, "API issue", ex);
+            ex.printStackTrace(System.err);
             System.exit(1);
         }
 
         // now lets make a call to the api to check
-        String json;
+        String json = "";
         try {
             json = cl.getHelper().callOX3Api(domain, path, "account");
         } catch (IOException ex) {
             logger.warning("There was an error calling the API");
-            return;
+            ex.printStackTrace(System.err);
+            System.exit(1);
         }
 
         // Read out the raw HTTP response body:
@@ -122,7 +126,8 @@ public class DemoV2Proxy {
                 json = cl.getHelper().callOX3Api(domain, path, "account", accountId);
             } catch (IOException ex) {
                 logger.warning("There was an error calling the API");
-                return;
+                ex.printStackTrace(System.err);
+                System.exit(1);
             }
 
             logger.info("JSON response: " + json);
