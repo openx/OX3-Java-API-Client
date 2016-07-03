@@ -49,18 +49,19 @@ public class Client
 
     private static final Logger logger = Logger.getLogger(Client.class.getName());
 
-    private String apiKey;
-    private String apiSecret;
-    private String loginUrl;
-    private String username;
-    private String password;
-    private String domain;
-    private String path;
-    private String requestTokenUrl;
-    private String accessTokenUrl;
-    private String authorizeUrl;
+    private final String apiKey;
+    private final String apiSecret;
+    private final String loginUrl;
+    private final String username;
+    private final String password;
+    private final String domain;
+    private final String path;
+    private final String requestTokenUrl;
+    private final String accessTokenUrl;
+    private final String authorizeUrl;
     private Helper helper;
     private HttpHost proxy;
+    private boolean ignoreSslCertificate;
 
     /**
      * Create the OpenX OAuth Client
@@ -88,17 +89,18 @@ public class Client
             String accessTokenUrl,
             String authorizeUrl )
     {
-        this.apiKey = apiKey;
-        this.apiSecret = apiSecret;
-        this.loginUrl = loginUrl;
-        this.username = username;
-        this.password = password;
-        this.domain = domain;
-        this.path = path;
-        this.requestTokenUrl = requestTokenUrl;
-        this.accessTokenUrl = accessTokenUrl;
-        this.authorizeUrl = authorizeUrl;
-        this.proxy = null;
+        this(apiKey,
+            apiSecret,
+            loginUrl,
+            username,
+            password,
+            domain,
+            path,
+            requestTokenUrl,
+            accessTokenUrl,
+            authorizeUrl,
+            null,
+            false);
     }
 
     /**
@@ -127,19 +129,21 @@ public class Client
             String requestTokenUrl,
             String accessTokenUrl,
             String authorizeUrl,
-            HttpHost proxy)
+            HttpHost proxy,
+            boolean ignoreSslCertificate)
     {
-        this(apiKey,
-            apiSecret,
-            loginUrl,
-            username,
-            password,
-            domain,
-            path,
-            requestTokenUrl,
-            accessTokenUrl,
-            authorizeUrl);
+        this.apiKey = apiKey;
+        this.apiSecret = apiSecret;
+        this.loginUrl = loginUrl;
+        this.username = username;
+        this.password = password;
+        this.domain = domain;
+        this.path = path;
+        this.requestTokenUrl = requestTokenUrl;
+        this.accessTokenUrl = accessTokenUrl;
+        this.authorizeUrl = authorizeUrl;
         this.proxy = proxy;
+        this.ignoreSslCertificate = ignoreSslCertificate;
     }
 
     /**
@@ -219,7 +223,7 @@ public class Client
 
         // now to log in
         String result;
-        helper = new Helper(proxy, loginUrl, username, password, requestToken.getToken());
+        helper = new Helper(proxy, loginUrl, username, password, requestToken.getToken(), ignoreSslCertificate);
         result = helper.doLogin();
 
         logger.fine("SSO Login response: " + result);
