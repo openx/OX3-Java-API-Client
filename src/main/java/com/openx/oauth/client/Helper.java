@@ -20,6 +20,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
+
+import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocket;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -34,6 +39,7 @@ import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.conn.ssl.TrustStrategy;
+import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -50,7 +56,7 @@ import com.openx.oauth.redirect.OpenXRedirectStrategy;
  * @author keithmiller
  */
 public class Helper {
-
+    private static final Logger logger = Logger.getLogger(Helper.class.getName());
     protected HttpHost proxy;
     protected String url;
     protected String username;
@@ -338,6 +344,7 @@ public class Helper {
             httpclient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
         }
         if (ignoreSslCertificate) {
+            logger.info("disable ssl certificate check");
             ignoreSslCertificate(httpclient);
         }
         OpenXRedirectStrategy dsr = new OpenXRedirectStrategy();
@@ -355,6 +362,27 @@ public class Helper {
                 @Override
                 public boolean isTrusted(X509Certificate[] chain, String authType) throws CertificateException {
                     return true;
+                }
+            }, new X509HostnameVerifier(){
+
+                @Override
+                public boolean verify(String hostname, SSLSession session) {
+                    return true;
+                }
+
+                @Override
+                public void verify(String host, SSLSocket ssl) throws IOException {
+                    // do nothing
+                }
+
+                @Override
+                public void verify(String host, X509Certificate cert) throws SSLException {
+                    // do nothing
+                }
+
+                @Override
+                public void verify(String host, String[] cns, String[] subjectAlts) throws SSLException {
+                    // do nothing
                 }
             });
             httpclient.getConnectionManager().getSchemeRegistry().register(new Scheme("https", 443, sslsf));
