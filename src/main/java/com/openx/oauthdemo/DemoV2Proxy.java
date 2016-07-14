@@ -89,13 +89,16 @@ public class DemoV2Proxy {
             // connect to the server
             cl.OX3OAuth();
         } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(Demo.class.getName()).log(Level.SEVERE, "UTF-8 support needed for OAuth", ex);
+            logger.log(Level.SEVERE, "UTF-8 support needed for OAuth", ex);
+            ex.printStackTrace();
             System.exit(1);
         } catch (IOException ex) {
-            Logger.getLogger(Demo.class.getName()).log(Level.SEVERE, "IO file reading error", ex);
+            logger.log(Level.SEVERE, "IO file reading error", ex);
+            ex.printStackTrace();
             System.exit(1);
         } catch (Exception ex) {
-            Logger.getLogger(Demo.class.getName()).log(Level.SEVERE, "API issue", ex);
+            logger.log(Level.SEVERE, "API issue", ex);
+            ex.printStackTrace();
             System.exit(1);
         }
 
