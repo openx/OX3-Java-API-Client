@@ -19,6 +19,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonParser;
 import com.openx.oauth.client.Client;
 import com.openx.ox3.entities.OX3Account;
 
@@ -26,9 +28,9 @@ import com.openx.ox3.entities.OX3Account;
  * OX3 with OAuth demo
  * @author keithmiller
  */
-public class Demo {
+public class DemoV2 {
 
-    private static final Logger logger = Logger.getLogger(Demo.class.getName());
+    private static final Logger logger = Logger.getLogger(DemoV2.class.getName());
     
     /** 
      * Main class. OX3 with OAuth demo
@@ -85,44 +87,63 @@ public class Demo {
             // connect to the server
             cl.OX3OAuth();
         } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(Demo.class.getName()).log(Level.SEVERE,
-                    "UTF-8 support needed for OAuth", ex);
+            Logger.getLogger(DemoV2.class.getName()).log(Level.SEVERE, "UTF-8 support needed for OAuth", ex);
+            ex.printStackTrace(System.err);
+            System.exit(1);
         } catch (IOException ex) {
-            Logger.getLogger(Demo.class.getName()).log(Level.SEVERE,
-                    "IO file reading error", ex);
+            Logger.getLogger(DemoV2.class.getName()).log(Level.SEVERE, "IO file reading error", ex);
+            ex.printStackTrace(System.err);
+            System.exit(1);
         } catch (Exception ex) {
-            Logger.getLogger(Demo.class.getName()).log(Level.SEVERE,
-                    "API issue", ex);
+            Logger.getLogger(DemoV2.class.getName()).log(Level.SEVERE, "API issue", ex);
+            ex.printStackTrace(System.err);
+            System.exit(1);
         }
 
         // now lets make a call to the api to check 
-        String json;
+        String json = "";
         try {
             json = cl.getHelper().callOX3Api(domain, path, "account");
         } catch (IOException ex) {
             logger.warning("There was an error calling the API");
-            return;
+            ex.printStackTrace(System.err);
+            System.exit(1);
         }
 
+        // Read out the raw HTTP response body:
         logger.info("JSON response: " + json);
 
         Gson gson = new Gson();
-        int[] accounts = gson.fromJson(json, int[].class);
+        // List of actual accounts in this response:
+        JsonParser parser = new JsonParser();
+        JsonArray accounts = parser.parse(json).getAsJsonObject().
+                getAsJsonArray("objects");
 
-        if (accounts.length > 0) {
+        if (accounts.size() > 0) {
             // let's get a single account
             try {
-                json = cl.getHelper().callOX3Api(domain, path, "account", accounts[0]);
+                // Get the ID of the first account in the list:
+                int accountId = accounts.get(0).getAsJsonObject().get("id").
+                        getAsInt();
+                // Repeat the API query, asking only for the
+                // account with this ID:
+                json = cl.getHelper().callOX3Api(domain, path, "account",
+                        accountId);
             } catch (IOException ex) {
                 logger.warning("There was an error calling the API");
-                return;
+                ex.printStackTrace(System.err);
+                System.exit(1);
             }
 
             logger.info("JSON response: " + json);
 
-            OX3Account account = gson.fromJson(json, OX3Account.class);
+            // In v2, all responses for single objects come in
+            // the form of unary arrays:
+            OX3Account account = gson.fromJson(
+                    parser.parse(json).getAsJsonArray().get(0),
+                    OX3Account.class);
 
-            logger.info("Account id: " + account.getId() + " name: "
+            logger.warning("Account id: " + account.getId() + " name: "
                     + account.getName());
         }
     }
