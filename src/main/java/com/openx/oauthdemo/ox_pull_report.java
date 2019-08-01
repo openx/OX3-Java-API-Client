@@ -28,9 +28,10 @@ import com.openx.ox3.entities.OX3Account;
  * OX3 with OAuth demo
  * @author keithmiller
  */
-public class DemoV2 {
+public class ox_pull_report {
 
-    private static final Logger logger = Logger.getLogger(DemoV2.class.getName());
+    private static final Logger logger = Logger.getLogger(ox_pull_report.class.getName());
+	private static String myParams;
     
     /** 
      * Main class. OX3 with OAuth demo
@@ -75,10 +76,11 @@ public class DemoV2 {
         username = defaultProps.getProperty("username").trim();
         password = defaultProps.getProperty("password").trim();
         domain = defaultProps.getProperty("domain").trim();
-        path = defaultProps.getProperty("path").trim();
+        path = "/data/1.0/report/";
         requestTokenUrl = defaultProps.getProperty("requestTokenUrl").trim();
         accessTokenUrl = defaultProps.getProperty("accessTokenUrl").trim();
         authorizeUrl = defaultProps.getProperty("authorizeUrl").trim();
+        myParams = defaultProps.getProperty("myParams");
 
         // log in to the server
         Client cl = new Client(apiKey, apiSecret, loginUrl, username, password,
@@ -87,23 +89,24 @@ public class DemoV2 {
             // connect to the server
             cl.OX3OAuth();
         } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(DemoV2.class.getName()).log(Level.SEVERE, "UTF-8 support needed for OAuth", ex);
+            Logger.getLogger(ox_pull_report.class.getName()).log(Level.SEVERE, "UTF-8 support needed for OAuth", ex);
             ex.printStackTrace(System.err);
             System.exit(1);
         } catch (IOException ex) {
-            Logger.getLogger(DemoV2.class.getName()).log(Level.SEVERE, "IO file reading error", ex);
+            Logger.getLogger(ox_pull_report.class.getName()).log(Level.SEVERE, "IO file reading error", ex);
             ex.printStackTrace(System.err);
             System.exit(1);
         } catch (Exception ex) {
-            Logger.getLogger(DemoV2.class.getName()).log(Level.SEVERE, "API issue", ex);
+            Logger.getLogger(ox_pull_report.class.getName()).log(Level.SEVERE, "API issue", ex);
             ex.printStackTrace(System.err);
             System.exit(1);
         }
 
         // now lets make a call to the api to check 
         String json = "";
+ 
         try {
-            json = cl.getHelper().callOX3Api(domain, path, "account");
+            json = cl.getHelper().postAPICall(domain, path, myParams);
         } catch (IOException ex) {
             logger.warning("There was an error calling the API");
             ex.printStackTrace(System.err);
@@ -113,38 +116,5 @@ public class DemoV2 {
         // Read out the raw HTTP response body:
         logger.info("JSON response: " + json);
 
-        Gson gson = new Gson();
-        // List of actual accounts in this response:
-        JsonParser parser = new JsonParser();
-        JsonArray accounts = parser.parse(json).getAsJsonObject().
-                getAsJsonArray("objects");
-
-        if (accounts.size() > 0) {
-            // let's get a single account
-            try {
-                // Get the ID of the first account in the list:
-                int accountId = accounts.get(0).getAsJsonObject().get("id").
-                        getAsInt();
-                // Repeat the API query, asking only for the
-                // account with this ID:
-                json = cl.getHelper().callOX3Api(domain, path, "account",
-                        accountId);
-            } catch (IOException ex) {
-                logger.warning("There was an error calling the API");
-                ex.printStackTrace(System.err);
-                System.exit(1);
-            }
-
-            logger.info("JSON response: " + json);
-
-            // In v2, all responses for single objects come in
-            // the form of unary arrays:
-            OX3Account account = gson.fromJson(
-                    parser.parse(json).getAsJsonArray().get(0),
-                    OX3Account.class);
-
-            logger.warning("Account id: " + account.getId() + " name: "
-                    + account.getName());
-        }
     }
 }
