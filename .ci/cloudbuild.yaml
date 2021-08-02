@@ -17,4 +17,3 @@ options:
   volumes:
     - name: 'mvn-cache'
       path: '/root/.m2'
-tags: ['qa']
