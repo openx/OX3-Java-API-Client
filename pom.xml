@@ -4,7 +4,7 @@
 
   <groupId>com.openx</groupId>
   <artifactId>OAuthDemo</artifactId>
-  <version>1.1.0</version>
+  <version>1.2.0</version>
   <packaging>jar</packaging>
 
   <name>OAuthDemo</name>
@@ -13,6 +13,72 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
+
+  <profiles>
+    <profile>
+      <id>gar-profile</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <repo-url>artifactregistry://us-central1-maven.pkg.dev/ox-registry-prod</repo-url>
+        <publish-snapshot-path>ox-snapshots</publish-snapshot-path>
+        <publish-release-path>ox-releases</publish-release-path>
+        <snapshot-path>ox-snapshots</snapshot-path>
+        <release-path>ox-releases</release-path>
+      </properties>
+    </profile>
+    <profile>
+      <id>artifactory-profile</id>
+      <properties>
+        <repo-url>https://artifactory.prod.gcp.openx.org</repo-url>
+        <publish-snapshot-path>artifactory/libs-snapshot-local</publish-snapshot-path>
+        <publish-release-path>artifactory/libs-release-local</publish-release-path>
+        <snapshot-path>artifactory/libs-snapshot</snapshot-path>
+        <release-path>artifactory/libs-release</release-path>
+      </properties>
+    </profile>
+  </profiles>
+
+  <distributionManagement>
+    <repository>
+      <id>releases</id>
+      <url>${repo-url}/${publish-release-path}</url>
+    </repository>
+    <snapshotRepository>
+      <id>snapshots</id>
+      <url>${repo-url}/${publish-snapshot-path}</url>
+    </snapshotRepository>
+  </distributionManagement>
+
+  <repositories>
+    <repository>
+      <id>libs-release</id>
+      <url>${repo-url}/${release-path}</url>
+    </repository>
+    <repository>
+      <id>libs-snapshot</id>
+      <url>${repo-url}/${snapshot-path}</url>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>libs-release</id>
+      <url>${repo-url}/${release-path}</url>
+    </pluginRepository>
+    <pluginRepository>
+      <id>libs-snapshot</id>
+      <url>${repo-url}/${snapshot-path}</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
 
   <dependencies>
     <dependency>
@@ -41,14 +107,20 @@
   </dependencies>
 
   <build>
+    <extensions>
+      <extension>
+        <groupId>com.google.cloud.artifactregistry</groupId>
+        <artifactId>artifactregistry-maven-wagon</artifactId>
+        <version>2.1.1</version>
+      </extension>
+    </extensions>
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
         <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
+          <release>8</release>
         </configuration>
-        <version>2.3.2</version>
       </plugin>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
