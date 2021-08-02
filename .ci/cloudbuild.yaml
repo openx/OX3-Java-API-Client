@@ -1,0 +1,19 @@
+steps:
+  - id: build
+    name: maven:3.6.1-jdk-11-slim
+    entrypoint: mvn
+    args: ['clean', 'package', '--no-transfer-progress']
+  - id: deploy
+    name: maven:3.6.1-jdk-11-slim
+    entrypoint: bash
+    args:
+    - -c
+    - |
+      ! [[ "$BRANCH_NAME" =~ ^(master)$ ]] && exit 0
+      mvn deploy -Dmaven.test.skip=true --no-transfer-progress
+    waitFor: ['build']
+
+options:
+  volumes:
+    - name: 'mvn-cache'
+      path: '/root/.m2'
